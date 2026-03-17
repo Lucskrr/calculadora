@@ -12,13 +12,13 @@ A aplicação deve realizar estas operações:
 - Subtração (`-`)
 - Multiplicação (`*`)
 - Divisão (`/`)
-- Módulo (`mod`, resto da divisão)
+- Raiz quadrada (`√`)
 
 ## 3) Requisitos funcionais
 
 RF-01. O usuário deve conseguir inserir números de 0 a 9.
 
-RF-02. O usuário deve conseguir escolher uma operação entre `+`, `-`, `*`, `/` e `mod`.
+RF-02. O usuário deve conseguir escolher uma operação entre `+`, `-`, `*`, `/` e `√`.
 
 RF-03. O sistema deve armazenar:
 
@@ -28,7 +28,9 @@ RF-03. O sistema deve armazenar:
 
 RF-04. Ao pressionar `=`, o sistema deve calcular o resultado da operação selecionada.
 
-RF-05. O sistema deve exibir o resultado no visor.
+RF-05. O sistema deve exibir a expressão completa (ex: `1 + 1`) e, após calcúlo, o resultado no visor.
+
+RF-09. O sistema deve armazenar e exibir um histórico das contas passadas.
 
 RF-06. O botão `C` (limpar) deve resetar toda a conta atual.
 
@@ -36,7 +38,7 @@ RF-07. O botão `DEL` (apagar) deve remover apenas o último caractere digitado.
 
 RF-08. Em divisão por zero, o sistema deve bloquear o cálculo e mostrar mensagem de erro: `Não é possível dividir por zero`.
 
-RF-10. Em `mod` com divisor zero, o sistema deve bloquear o cálculo e mostrar mensagem de erro: `Não é possível calcular módulo com zero`.
+RF-10. Em `√` de número negativo, o sistema deve bloquear o cálculo e mostrar mensagem de erro: `Número inválido para raiz quadrada`.
 
 ## 4) Regras de negócio
 
@@ -52,12 +54,12 @@ RN-05. Após mostrar resultado, se o usuário escolher operador, o resultado vir
 
 ## 5) Requisitos de interface (mínimos)
 
-RI-01. Deve existir um visor no topo para mostrar expressão e resultado.
+RI-01. Deve existir um visor no topo para mostrar a expressão atual sendo digitada, e uma área para o histórico de cálculos.
 
 RI-02. Deve existir teclado com botões:
 
 - Números `0` a `9`
-- `+`, `-`, `*`, `/`, `mod`
+- `+`, `-`, `*`, `/`, `√`
 - `=`
 - `C`
 - `DEL`
@@ -76,8 +78,8 @@ CA-03. Dado `6 * 8`, ao pressionar `=`, o resultado deve ser `48`.
 
 CA-04. Dado `20 / 5`, ao pressionar `=`, o resultado deve ser `4`.
 
-CA-05. Dado `10 mod 3`, ao pressionar `=`, o resultado deve ser `1`.
+CA-05. Dado `16`, ao pressionar `√`, o resultado deve ser `4`.
 
 CA-06. Dado `5 / 0`, ao pressionar `=`, o sistema deve informar erro e não quebrar a aplicação.
 
-CA-07. Dado `5 mod 0`, ao pressionar `=`, o sistema deve informar erro e não quebrar a aplicação.
+CA-07. Dado `-5`, ao pressionar `√`, o sistema deve informar erro e não quebrar a aplicação.

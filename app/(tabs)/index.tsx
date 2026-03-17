@@ -1,98 +1,169 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { Alert, Button, ScrollView, Text, View } from 'react-native';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+export default function Calculator() {
+  const [firstNumber, setFirstNumber] = useState('');
+  const [operator, setOperator] = useState('');
+  const [secondNumber, setSecondNumber] = useState('');
+  const [history, setHistory] = useState<string[]>([]);
+  const [isResult, setIsResult] = useState(false);
 
-export default function HomeScreen() {
+  function handleNumber(num: number) {
+    if (isResult) {
+      setFirstNumber(String(num));
+      setOperator('');
+      setSecondNumber('');
+      setIsResult(false);
+    } else if (operator) {
+      setSecondNumber(secondNumber + String(num));
+    } else {
+      setFirstNumber(firstNumber + String(num));
+    }
+  }
+
+  function handleOperator(selectedOperator: string) {
+    if (!firstNumber && selectedOperator !== '-') return;
+
+    if (!firstNumber && selectedOperator === '-') {
+      setFirstNumber('-');
+      return;
+    }
+
+    setOperator(selectedOperator);
+    setIsResult(false);
+  }
+
+  function handleSquareRoot() {
+    let targetNumber = operator ? secondNumber : firstNumber;
+    if (!targetNumber || targetNumber === '-') return;
+
+    let val = parseFloat(targetNumber);
+    if (val < 0) {
+      Alert.alert("Erro", "Número inválido para raiz quadrada.");
+      clear();
+      return;
+    }
+
+    let res = Math.sqrt(val);
+    const expressao = `√${targetNumber} = ${res}`;
+    setHistory([expressao, ...history]);
+
+    if (operator) {
+      setSecondNumber(String(res));
+    } else {
+      setFirstNumber(String(res));
+      setIsResult(true);
+    }
+  }
+
+  function clear() {
+    setFirstNumber('');
+    setOperator('');
+    setSecondNumber('');
+    setIsResult(false);
+  }
+
+  function clearHistory() {
+    setHistory([]);
+  }
+
+  function handleDelete() {
+    if (isResult) {
+      setIsResult(false);
+    }
+
+    if (secondNumber) {
+      setSecondNumber(secondNumber.slice(0, -1));
+    } else if (operator) {
+      setOperator('');
+    } else if (firstNumber) {
+      setFirstNumber(firstNumber.slice(0, -1));
+    }
+  }
+
+  function calculate() {
+    if (!firstNumber || !operator || !secondNumber || secondNumber === '-') return;
+
+    const n1 = parseFloat(firstNumber);
+    const n2 = parseFloat(secondNumber);
+    let result = 0;
+
+    if (operator === '/' && n2 === 0) {
+      Alert.alert("Erro", "Não é possível dividir por zero.");
+      clear();
+      return;
+    }
+
+    switch (operator) {
+      case '+': result = n1 + n2; break;
+      case '-': result = n1 - n2; break;
+      case '*': result = n1 * n2; break;
+      case '/': result = n1 / n2; break;
+    }
+
+    const expressao = `${firstNumber} ${operator} ${secondNumber} = ${result}`;
+    setHistory([expressao, ...history]);
+
+    setFirstNumber(String(result));
+    setOperator('');
+    setSecondNumber('');
+    setIsResult(true);
+  }
+
+  const displayString = `${firstNumber} ${operator} ${secondNumber}`.trim() || '0';
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <View style={{ flex: 1, padding: 20, paddingTop: 40, backgroundColor: '#fff' }}>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      <View style={{ flex: 1, borderWidth: 1, borderColor: '#ccc', marginBottom: 10, padding: 10 }}>
+        <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 10 }}>Histórico:</Text>
+        <ScrollView>
+          {history.map((item, index) => (
+            <Text key={index} style={{ fontSize: 16, color: '#555', marginBottom: 5 }}>{item}</Text>
+          ))}
+        </ScrollView>
+        {history.length > 0 && <Button title="Limpar Histórico" onPress={clearHistory} />}
+      </View>
+
+      <View style={{ marginBottom: 20, borderWidth: 1, borderColor: '#000', padding: 20 }}>
+        <Text style={{ fontSize: 32, textAlign: 'right', color: '#000' }}>{displayString}</Text>
+      </View>
+
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
+        <Button title=" C " onPress={clear} />
+        <Button title=" DEL " onPress={handleDelete} />
+        <Button title="  √  " onPress={handleSquareRoot} />
+        <Button title="  /  " onPress={() => handleOperator('/')} />
+      </View>
+
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
+        <Button title="  7  " onPress={() => handleNumber(7)} />
+        <Button title="  8  " onPress={() => handleNumber(8)} />
+        <Button title="  9  " onPress={() => handleNumber(9)} />
+        <Button title="  *  " onPress={() => handleOperator('*')} />
+      </View>
+
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
+        <Button title="  4  " onPress={() => handleNumber(4)} />
+        <Button title="  5  " onPress={() => handleNumber(5)} />
+        <Button title="  6  " onPress={() => handleNumber(6)} />
+        <Button title="  -  " onPress={() => handleOperator('-')} />
+      </View>
+
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
+        <Button title="  1  " onPress={() => handleNumber(1)} />
+        <Button title="  2  " onPress={() => handleNumber(2)} />
+        <Button title="  3  " onPress={() => handleNumber(3)} />
+        <Button title="  +  " onPress={() => handleOperator('+')} />
+      </View>
+
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
+        <View style={{ width: 40 }} />
+        <Button title="  0  " onPress={() => handleNumber(0)} />
+        <View style={{ width: 40 }} />
+        <Button title="  =  " onPress={calculate} />
+      </View>
+
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
